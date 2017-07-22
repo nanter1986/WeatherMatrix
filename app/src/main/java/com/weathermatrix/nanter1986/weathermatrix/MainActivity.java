@@ -2,6 +2,7 @@ package com.weathermatrix.nanter1986.weathermatrix;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.AsyncTask;
@@ -18,6 +19,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
@@ -26,6 +30,8 @@ public class MainActivity extends Activity {
     Document doc2;
     Elements img;
     Elements img2;
+    Bitmap theBitmap;
+    String selectedURL;
     ArrayList<String> resultUrls = new ArrayList<String>();
     ImageView displayImage;
     @Override
@@ -34,6 +40,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         displayImage=findViewById(R.id.displayImage);
         new GetDocument().execute();
+
 
     }
 
@@ -48,26 +55,31 @@ public class MainActivity extends Activity {
                 TheLogger.myLog("2","Array created of size"+" "+img.size());
                 for(Element e:img){
                     TheLogger.myLog("2","src:<"+e.attr("data-src")+">");
-                    //https://stackoverflow.com/questions/40162503/java-jsoup-google-image-search-result-parsing
                 }
-                TheLogger.myLog("2","data-src:<"+img.get(0).attr("data-src")+">");
-                doc2=Jsoup.connect(img.get(0).attr("data-src")).get();
-                TheLogger.myLog("3","Opened doc2 at "+img.get(0).attr("data-src"));
-                img2 = doc2.select("img.irc_mi");
-                TheLogger.myLog("4","Array from doc2 created of size"+" "+img2.size());
-                TheLogger.myLog("5","Found url:"+img2.get(0).absUrl("src"));
+                selectedURL=img.get(0).attr("data-src");
+                TheLogger.myLog("2","Selected url to go: "+selectedURL);
+
+
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            try {
+                TheLogger.myLog("3","Opening doc2 started at "+selectedURL +"...... ");
+                doc2=Jsoup.connect(selectedURL).ignoreContentType(true).get();
+                TheLogger.myLog("3","Opened doc2 at "+selectedURL);
+                TheLogger.myLog("3","The full html:\n"+doc2.html());
+                theBitmap=getBitmapFromURL(selectedURL);
+                TheLogger.myLog("3.1","got bitmap");
 
-            String title = doc.title();
-
-
-            for(Element e:img){
-                //TheLogger.myLog("5",e.absUrl("alt")+" href:<"+e.absUrl("href")+">");
-                //https://stackoverflow.com/questions/40162503/java-jsoup-google-image-search-result-parsing
+                //img2 = doc2.select("img");
+                //TheLogger.myLog("4","Array from doc2 created of size"+" "+img2.size());
+                //TheLogger.myLog("5","Found url:"+img2.get(0).absUrl("src"));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
+
 
             return null;
         }
@@ -75,6 +87,30 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            displayImage.setImageBitmap(theBitmap);
+
         }
     }
+
+
+
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
+    }
+
+
+
+
+
 }
