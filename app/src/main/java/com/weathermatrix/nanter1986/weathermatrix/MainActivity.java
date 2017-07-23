@@ -63,10 +63,15 @@ public class MainActivity extends Activity{
         displayText = (TextView) findViewById(R.id.displayText);
         getLocation();
         getLocationInfo();
+        getWeather();
 
         new GetDocument().execute();
 
 
+    }
+
+    private void getWeather() {
+        //https://code.tutsplus.com/tutorials/create-a-weather-app-on-android--cms-21587
     }
 
     private void getLocationInfo() {
@@ -90,7 +95,7 @@ public class MainActivity extends Activity{
 
                 String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
                 city = addresses.get(0).getLocality();
-                state = addresses.get(0).getAdminArea();
+                state = addresses.get(0).getSubAdminArea();
                 country = addresses.get(0).getCountryName();
                 postalCode = addresses.get(0).getPostalCode();
                 knownName = addresses.get(0).getFeatureName();
@@ -102,6 +107,8 @@ public class MainActivity extends Activity{
                 TheLogger.myLog("1","country:"+country);
                 TheLogger.myLog("1","postal:"+postalCode);
                 TheLogger.myLog("1","known name:"+knownName);
+                TheLogger.myLog("1","thourough:"+addresses.get(0).getThoroughfare());
+                TheLogger.myLog("1","Sthourough:"+addresses.get(0).getSubThoroughfare());
             } catch (IOException e) {
                 TheLogger.myLog("1","in catch");
                 e.printStackTrace();
