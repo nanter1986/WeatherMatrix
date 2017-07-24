@@ -1,6 +1,7 @@
 package com.weathermatrix.nanter1986.weathermatrix;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,13 +10,17 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -50,6 +55,9 @@ public class MainActivity extends Activity{
     String country;
     String postalCode;
     String knownName;
+
+    Context context;
+    Handler handler;
     private FusedLocationProviderClient mFusedLocationClient;
 
 
@@ -61,6 +69,8 @@ public class MainActivity extends Activity{
         editor = sharedPreferences.edit();
         displayImage = (ImageView) findViewById(R.id.displayImage);
         displayText = (TextView) findViewById(R.id.displayText);
+        handler=new Handler();
+        context=getApplicationContext();
         getLocation();
         getLocationInfo();
         getWeather();
@@ -72,6 +82,33 @@ public class MainActivity extends Activity{
 
     private void getWeather() {
         //https://code.tutsplus.com/tutorials/create-a-weather-app-on-android--cms-21587
+        new Thread(){
+            public void run(){
+                final JSONObject json = WeatherGrabber.grabWeather(context, city);
+                if(json == null){
+                    handler.post(new Runnable(){
+                        public void run(){
+                            TheLogger.myLog("10","JSON is null sadly");
+                        }
+                    });
+                } else {
+                    handler.post(new Runnable(){
+                        public void run(){
+                            displayWeather(json);
+                        }
+                    });
+                }
+            }
+        }.start();
+    }
+
+    public void displayWeather(JSONObject json){
+        try {
+            JSONObject main = json.getJSONObject("main");
+            displayText.setText(String.format("%.2f", main.getDouble("temp"))+ " ℃");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void getLocationInfo() {
@@ -141,6 +178,8 @@ public class MainActivity extends Activity{
             se.printStackTrace();
         }
     }
+
+
 
 
     public class GetDocument extends AsyncTask<Void,Void,Void>{
