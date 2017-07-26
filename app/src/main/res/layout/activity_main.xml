@@ -16,15 +16,172 @@
         tools:layout_editor_absoluteX="8dp"
         android:weightSum="10">
 
-        <ImageView
-            android:id="@+id/displayImage"
+        <ViewFlipper
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="7"/>
-        <TextView
-            android:id="@+id/displayText"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"/>
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:id="@+id/zeroL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+
+                <ImageView
+                    android:id="@+id/zeroDisplayImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="7"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/zeroDisplayText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:text="zero" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/oneL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+
+                <ImageView
+                    android:id="@+id/oneDisplayImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="7"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/oneDisplayText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:text="one" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/twoL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+
+                <ImageView
+                    android:id="@+id/twoDisplayImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="7"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/twoDisplayText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:text="two" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/threeL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+
+                <ImageView
+                    android:id="@+id/threeDisplayImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="7"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/threeDisplayText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:text="three" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fourL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+
+                <ImageView
+                    android:id="@+id/fourDisplayImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="7"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/fourDisplayText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:text="four" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fiveL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+
+                <ImageView
+                    android:id="@+id/fiveDisplayImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="7"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/fiveDisplayText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:text="five" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sixL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+
+                <ImageView
+                    android:id="@+id/sixDisplayImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="7"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/sixDisplayText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:text="six" />
+
+            </LinearLayout>
+
+        </ViewFlipper>
+
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

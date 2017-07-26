@@ -17,7 +17,8 @@ import java.net.URL;
  */
 
 public class WeatherGrabber {
-    private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&units=metric&APPID=%s";
+    //private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&units=metric&APPID=%s";
+    private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/forecast?lat=%s&lon=%s&units=metric&APPID=%s";
 
     public static JSONObject grabWeather(Context context, float longitude,float latitude) {
         try {

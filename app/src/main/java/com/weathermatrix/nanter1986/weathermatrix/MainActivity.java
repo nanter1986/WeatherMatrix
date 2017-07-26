@@ -69,8 +69,11 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         sharedPreferences = getPreferences(MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        displayImage = (ImageView) findViewById(R.id.displayImage);
-        displayText = (TextView) findViewById(R.id.displayText);
+        displayImage = (ImageView) findViewById(R.id.zeroDisplayImage);
+        displayText = (TextView) findViewById(R.id.zeroDisplayText);
+
+        //http://www.journaldev.com/10429/android-viewflipper-example-tutorial
+
         handler = new Handler();
         context = getApplicationContext();
         getLocation();
@@ -123,9 +126,10 @@ public class MainActivity extends Activity {
 
     public void displayWeather(JSONObject json) {
         try {
-            JSONObject main = json.getJSONObject("main");
+            JSONObject full = json.getJSONArray("list").getJSONObject(0).getJSONObject("main");
             TheLogger.myLog("weather", "cool1");
-            displayText.setText(String.format("%.2f", main.getDouble("temp")) + " ℃");
+            String temperature=full.getString("temp");
+            displayText.setText(String.format("%.2f", Double.parseDouble(temperature)) + " ℃");
             TheLogger.myLog("weather", "cool2");
             //weatherCondition = json.getJSONArray("weather").getJSONObject(0).getString("main");
             TheLogger.myLog("weather", "cool3");
@@ -214,9 +218,11 @@ public class MainActivity extends Activity {
                 if (json == null) {
                     TheLogger.myLog("10", "JSON is null sadly");
                 } else {
-                    weatherCondition = json.getJSONArray("weather").getJSONObject(0).getString("main");
+                    //weatherCondition = json.getJSONArray("weather").getJSONObject(0).getString("main");
+                    weatherCondition = json.getJSONArray("list").getJSONObject(0).getJSONArray("weather").getJSONObject(0).getString("main");
                     editor.putString("json1", json.toString());
                     TheLogger.myLog("10", "JSON is cool: "+json.toString());
+                    TheLogger.myLog("10", "small JSON is cool: "+weatherCondition);
                     editor.commit();
                     //displayWeather(json);
                 }
