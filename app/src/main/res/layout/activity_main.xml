@@ -18,7 +18,8 @@
 
         <ViewFlipper
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:id="@+id/view_flipper">
 
             <LinearLayout
                 android:id="@+id/zeroL"
@@ -32,14 +33,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="7"
-                    tools:ignore="ContentDescription" />
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    tools:ignore="ContentDescription"
+                    />
 
                 <TextView
                     android:id="@+id/zeroDisplayText"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="3"
-                    android:text="zero" />
+                    android:text="zero"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:textSize="18dp"
+                    android:textStyle="bold"/>
 
             </LinearLayout>
 
