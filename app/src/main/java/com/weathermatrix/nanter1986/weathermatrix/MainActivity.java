@@ -30,6 +30,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class MainActivity extends Activity {
     Document doc2;
     Elements img;
     Elements img2;
-    Bitmap theBitmap;
+    Bitmap[] theBitmap=new Bitmap[5];
     String selectedURL;
     ArrayList<String> resultUrls = new ArrayList<String>();
 
@@ -80,6 +81,8 @@ public class MainActivity extends Activity {
 
     private ViewFlipper mViewFlipper;
     private float initialX;
+
+    DisplayContainer[] containers=new DisplayContainer[5];
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -123,18 +126,23 @@ public class MainActivity extends Activity {
     private void referenceImageviewsAndTextviews() {
         zeroDisplayImage = findViewById(R.id.zeroDisplayImage);
         zeroDisplayText = findViewById(R.id.zeroDisplayText);
+        containers[0]=new DisplayContainer(zeroDisplayImage,zeroDisplayText,0);
 
         oneDisplayImage = findViewById(R.id.oneDisplayImage);
         oneDisplayText = findViewById(R.id.oneDisplayText);
+        containers[1]=new DisplayContainer(oneDisplayImage,oneDisplayText,11);
 
         twoDisplayImage = findViewById(R.id.twoDisplayImage);
         twoDisplayText = findViewById(R.id.twoDisplayText);
+        containers[2]=new DisplayContainer(twoDisplayImage,twoDisplayText,19);
 
         threeDisplayImage = findViewById(R.id.threeDisplayImage);
         threeDisplayText = findViewById(R.id.threeDisplayText);
+        containers[3]=new DisplayContainer(threeDisplayImage,threeDisplayText,27);
 
         fourDisplayImage = findViewById(R.id.fourDisplayImage);
         fourDisplayText = findViewById(R.id.fourDisplayText);
+        containers[4]=new DisplayContainer(fourDisplayImage,fourDisplayText,35);
 
         fiveDisplayImage = findViewById(R.id.fiveDisplayImage);
         fiveDisplayText = findViewById(R.id.fiveDisplayText);
@@ -183,32 +191,17 @@ public class MainActivity extends Activity {
 
     }
 
-    private void getWeather() {
-        //https://code.tutsplus.com/tutorials/create-a-weather-app-on-android--cms-21587
-
-        final JSONObject json = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
-        if (json == null) {
-
-            TheLogger.myLog("10", "JSON is null sadly");
-
-        } else {
-
-            displayWeather(json);
-        }
 
 
-    }
-
-    public void displayWeather(JSONObject json) {
+    public void displayWeather(JSONObject json,int index) {
         try {
-            JSONObject full = json.getJSONArray("list").getJSONObject(0).getJSONObject("main");
+            JSONObject full = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("main");
             TheLogger.myLog("weather", "cool1");
             String temperature = full.getString("temp");
-            zeroDisplayText.setText(String.format("%.2f", Double.parseDouble(temperature)) + " ℃");
+            containers[index].tv.setText(String.format("%.2f", Double.parseDouble(temperature)) + " ℃");
             TheLogger.myLog("weather", "cool2");
             //weatherCondition = json.getJSONArray("weather").getJSONObject(0).getString("main");
             TheLogger.myLog("weather", "cool3");
-            TheLogger.myLog("weather", weatherCondition.toString());
         } catch (JSONException e) {
             TheLogger.myLog("weather", "something wrong");
             e.printStackTrace();
@@ -283,7 +276,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    public class GetWeatherAsync extends AsyncTask<Void, Void, Void> {
+
+    public class GetDocument extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -291,67 +285,42 @@ public class MainActivity extends Activity {
             if (json == null) {
                 TheLogger.myLog("10", "JSON is null sadly");
             } else {
+                for (int i = 0; i < 5; i++) {
+                    try {
+                        String weatherConditionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("main");
+                        TheLogger.myLog("weather", weatherConditionLocal.toString());
+                        editor.putString("json1", json.toString());
+                        TheLogger.myLog("10", "JSON is cool: " + json.toString());
+                        TheLogger.myLog("10", "small JSON is cool-dayIndex: "+containers[i].day+" " + weatherConditionLocal);
+                        editor.commit();
+                        String urlForJsoup = "https://www.google.gr/search?q=" + city + "+" + weatherConditionLocal + "&client=ubuntu&hs=QMm&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiCqbiZvpnVAhWsI8AKHVSpD4kQ_AUICigB&biw=1301&bih=323";
+                        doc = Jsoup.connect(urlForJsoup).get();
+                        TheLogger.myLog("1", "Grabbed document at: " + urlForJsoup);
+                        img = doc.select("img[data-src]");
+                        TheLogger.myLog("2", "Array created of size" + " " + img.size());
+                        /*for (Element e : img) {
+                            TheLogger.myLog("2", "src:<" + e.attr("data-src") + ">");
+                        }*/
+                        selectedURL = img.get(i).attr("data-src");
+                        TheLogger.myLog("2", "Selected url to go: " + selectedURL);
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        TheLogger.myLog("3", "Opening doc2 started at " + selectedURL + "...... ");
+                        doc2 = Jsoup.connect(selectedURL).ignoreContentType(true).get();
+                        TheLogger.myLog("3", "Opened doc2 at " + selectedURL);
+                        TheLogger.myLog("3", "The full html:\n" + doc2.html());
+                        theBitmap[i] = getBitmapFromURL(selectedURL);
+                        TheLogger.myLog("3.1", "got bitmap");
 
-                displayWeather(json);
-            }
-            return null;
-        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            new GetDocument().execute();
-
-        }
-    }
-
-    public class GetDocument extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                final JSONObject json = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
-                if (json == null) {
-                    TheLogger.myLog("10", "JSON is null sadly");
-                } else {
-                    //weatherCondition = json.getJSONArray("weather").getJSONObject(0).getString("main");
-                    weatherCondition = json.getJSONArray("list").getJSONObject(0).getJSONArray("weather").getJSONObject(0).getString("main");
-                    editor.putString("json1", json.toString());
-                    TheLogger.myLog("10", "JSON is cool: " + json.toString());
-                    TheLogger.myLog("10", "small JSON is cool: " + weatherCondition);
-                    editor.commit();
-                    //displayWeather(json);
                 }
-                String urlForJsoup = "https://www.google.gr/search?q=" + city + "+" + weatherCondition + "&client=ubuntu&hs=QMm&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiCqbiZvpnVAhWsI8AKHVSpD4kQ_AUICigB&biw=1301&bih=323";
-                doc = Jsoup.connect(urlForJsoup).get();
-                TheLogger.myLog("1", "Grabbed document at: " + urlForJsoup);
-                img = doc.select("img[data-src]");
-                TheLogger.myLog("2", "Array created of size" + " " + img.size());
-                for (Element e : img) {
-                    TheLogger.myLog("2", "src:<" + e.attr("data-src") + ">");
-                }
-                selectedURL = img.get(0).attr("data-src");
-                TheLogger.myLog("2", "Selected url to go: " + selectedURL);
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-                TheLogger.myLog("3", "Opening doc2 started at " + selectedURL + "...... ");
-                doc2 = Jsoup.connect(selectedURL).ignoreContentType(true).get();
-                TheLogger.myLog("3", "Opened doc2 at " + selectedURL);
-                TheLogger.myLog("3", "The full html:\n" + doc2.html());
-                theBitmap = getBitmapFromURL(selectedURL);
-                TheLogger.myLog("3.1", "got bitmap");
-
-                //img2 = doc2.select("img");
-                //TheLogger.myLog("4","Array from doc2 created of size"+" "+img2.size());
-                //TheLogger.myLog("5","Found url:"+img2.get(0).absUrl("src"));
-            } catch (IOException e) {
-                e.printStackTrace();
             }
 
 
@@ -361,16 +330,19 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            zeroDisplayImage.setImageBitmap(theBitmap);
-            try {
-                JSONObject json = new JSONObject(sharedPreferences.getString("json1", ""));
-                displayWeather(json);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            for(int i=0;i<5;i++){
+                containers[i].iv.setImageBitmap(theBitmap[i]);
+                try {
+                    JSONObject json = new JSONObject(sharedPreferences.getString("json1", ""));
+                    displayWeather(json,i);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
-        }
-    }
 
+        }
+
+    }
 
 }
