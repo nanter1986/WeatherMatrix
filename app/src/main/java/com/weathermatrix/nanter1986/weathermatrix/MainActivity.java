@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
     Document doc2;
     Elements img;
     Elements img2;
-    Bitmap[] theBitmap=new Bitmap[5];
+    Bitmap[] theBitmap=new Bitmap[7];
     String selectedURL;
     ArrayList<String> resultUrls = new ArrayList<String>();
 
@@ -82,7 +82,7 @@ public class MainActivity extends Activity {
     private ViewFlipper mViewFlipper;
     private float initialX;
 
-    DisplayContainer[] containers=new DisplayContainer[5];
+    DisplayContainer[] containers=new DisplayContainer[7];
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -130,25 +130,28 @@ public class MainActivity extends Activity {
 
         oneDisplayImage = findViewById(R.id.oneDisplayImage);
         oneDisplayText = findViewById(R.id.oneDisplayText);
-        containers[1]=new DisplayContainer(oneDisplayImage,oneDisplayText,11);
+        containers[1]=new DisplayContainer(oneDisplayImage,oneDisplayText,1);
 
         twoDisplayImage = findViewById(R.id.twoDisplayImage);
         twoDisplayText = findViewById(R.id.twoDisplayText);
-        containers[2]=new DisplayContainer(twoDisplayImage,twoDisplayText,19);
+        containers[2]=new DisplayContainer(twoDisplayImage,twoDisplayText,2);
 
         threeDisplayImage = findViewById(R.id.threeDisplayImage);
         threeDisplayText = findViewById(R.id.threeDisplayText);
-        containers[3]=new DisplayContainer(threeDisplayImage,threeDisplayText,27);
+        containers[3]=new DisplayContainer(threeDisplayImage,threeDisplayText,3);
 
         fourDisplayImage = findViewById(R.id.fourDisplayImage);
         fourDisplayText = findViewById(R.id.fourDisplayText);
-        containers[4]=new DisplayContainer(fourDisplayImage,fourDisplayText,35);
+        containers[4]=new DisplayContainer(fourDisplayImage,fourDisplayText,4);
 
         fiveDisplayImage = findViewById(R.id.fiveDisplayImage);
         fiveDisplayText = findViewById(R.id.fiveDisplayText);
+        containers[5]=new DisplayContainer(fiveDisplayImage,fiveDisplayText,5);
 
         sixDisplayImage = findViewById(R.id.sixDisplayImage);
         sixDisplayText = findViewById(R.id.sixDisplayText);
+        containers[6]=new DisplayContainer(sixDisplayImage,sixDisplayText,6);
+
     }
 
     @Override
@@ -197,8 +200,9 @@ public class MainActivity extends Activity {
         try {
             JSONObject full = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("main");
             TheLogger.myLog("weather", "cool1");
+            String dateLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getString("dt_txt");
             String temperature = full.getString("temp");
-            containers[index].tv.setText(String.format("%.2f", Double.parseDouble(temperature)) + " ℃");
+            containers[index].tv.setText(dateLocal+" :\n"+String.format("%.2f", Double.parseDouble(temperature)) + " ℃");
             TheLogger.myLog("weather", "cool2");
             //weatherCondition = json.getJSONArray("weather").getJSONObject(0).getString("main");
             TheLogger.myLog("weather", "cool3");
@@ -285,10 +289,11 @@ public class MainActivity extends Activity {
             if (json == null) {
                 TheLogger.myLog("10", "JSON is null sadly");
             } else {
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 7; i++) {
                     try {
                         String weatherConditionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("main");
-                        TheLogger.myLog("weather", weatherConditionLocal.toString());
+                        String dateLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getString("dt_txt");
+                        TheLogger.myLog("date and weather: ", dateLocal+" : "+weatherConditionLocal.toString());
                         editor.putString("json1", json.toString());
                         TheLogger.myLog("10", "JSON is cool: " + json.toString());
                         TheLogger.myLog("10", "small JSON is cool-dayIndex: "+containers[i].day+" " + weatherConditionLocal);
@@ -330,7 +335,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            for(int i=0;i<5;i++){
+            for(int i=0;i<7;i++){
                 containers[i].iv.setImageBitmap(theBitmap[i]);
                 try {
                     JSONObject json = new JSONObject(sharedPreferences.getString("json1", ""));
