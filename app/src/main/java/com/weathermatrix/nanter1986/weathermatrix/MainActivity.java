@@ -283,6 +283,25 @@ public class MainActivity extends Activity {
 
     public class GetDocument extends AsyncTask<Void, Void, Void> {
 
+        protected String checkIfDay(String date){
+            String dayOrNight="day";
+            int theResult=03;
+            int stringLength=date.length();
+            char[] charArray=date.toCharArray();
+            for(int i=0;i<stringLength-2;i++){
+                if(charArray[i]==' '){
+                    theResult=Integer.parseInt(""+charArray[i+1]+charArray[i+2]);
+                    TheLogger.myLog("character into integer for day or night: ",""+theResult);
+                    break;
+                }
+            }
+            if(theResult<6 || theResult>20){
+                dayOrNight="night";
+            }
+
+            return dayOrNight;
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
             final JSONObject json = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
@@ -298,7 +317,9 @@ public class MainActivity extends Activity {
                         TheLogger.myLog("10", "JSON is cool: " + json.toString());
                         TheLogger.myLog("10", "small JSON is cool-dayIndex: "+containers[i].day+" " + weatherConditionLocal);
                         editor.commit();
-                        String urlForJsoup = "https://www.google.gr/search?q=" + city + "+" + weatherConditionLocal + "&client=ubuntu&hs=QMm&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiCqbiZvpnVAhWsI8AKHVSpD4kQ_AUICigB&biw=1301&bih=323";
+                        String timeOfDay=checkIfDay(dateLocal);
+                        TheLogger.myLog("day or night? answer:",timeOfDay);
+                        String urlForJsoup = "https://www.google.gr/search?q=" + city + "+" + weatherConditionLocal + "+" + timeOfDay +"&client=ubuntu&hs=QMm&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiCqbiZvpnVAhWsI8AKHVSpD4kQ_AUICigB&biw=1301&bih=323";
                         doc = Jsoup.connect(urlForJsoup).get();
                         TheLogger.myLog("1", "Grabbed document at: " + urlForJsoup);
                         img = doc.select("img[data-src]");
