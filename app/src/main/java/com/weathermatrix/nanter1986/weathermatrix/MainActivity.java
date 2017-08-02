@@ -34,6 +34,7 @@ import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -283,6 +284,76 @@ public class MainActivity extends Activity {
 
     public class GetDocument extends AsyncTask<Void, Void, Void> {
 
+        boolean grabbedNewJSONFromServer=false;
+
+        protected boolean checkIfOneHourHasPassedSinceLastRequest(String date){
+            if(date.equals("empty")){
+                grabbedNewJSONFromServer=true;
+                TheLogger.myLog("saved date:","is empty");
+                return true;
+            }
+            Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            int month = c.get(Calendar.MONTH)+1;
+            TheLogger.myLog("hour check:",hour+" "+getHourFromDateString(date));
+            TheLogger.myLog("day check:",day+" "+getDayFromDateString(date));
+            TheLogger.myLog("month check:",month+" "+getMonthFromDateString(date));
+            if(hour<=getHourFromDateString(date)+3 && day==getDayFromDateString(date) && month==getMonthFromDateString(date)){
+                return false;
+            }else{
+                grabbedNewJSONFromServer=true;
+                return true;
+            }
+        }
+
+        protected int getMonthFromDateString(String date){
+            int theResult=03;
+            int stringLength=date.length();
+            char[] charArray=date.toCharArray();
+            for(int i=0;i<stringLength-2;i++){
+                if(charArray[i]=='-'){
+                    theResult=Integer.parseInt(""+charArray[i+1]+charArray[i+2]);
+                    TheLogger.myLog("character into integer for Month: ",""+theResult);
+                    break;
+                }
+            }
+            return theResult;
+        }
+
+        protected int getDayFromDateString(String date){
+            int countForDashOnDate=0;
+            int theResult=03;
+            int stringLength=date.length();
+            char[] charArray=date.toCharArray();
+            for(int i=0;i<stringLength-2;i++){
+                if(charArray[i]=='-' && countForDashOnDate==1){
+                    theResult=Integer.parseInt(""+charArray[i+1]+charArray[i+2]);
+                    TheLogger.myLog("character into integer for day: ",""+theResult);
+                    break;
+                }else if(charArray[i]=='-'){
+                    countForDashOnDate++;
+                }
+            }
+
+            return theResult;
+        }
+
+        protected int getHourFromDateString(String date){
+            int theResult=03;
+            int stringLength=date.length();
+            char[] charArray=date.toCharArray();
+            for(int i=0;i<stringLength-2;i++){
+                if(charArray[i]==' '){
+                    theResult=Integer.parseInt(""+charArray[i+1]+charArray[i+2]);
+                    TheLogger.myLog("character into integer for hour: ",""+theResult);
+                    break;
+                }
+            }
+
+            return theResult;
+        }
+
         protected String checkIfDay(String date){
             String dayOrNight="day";
             int theResult=03;
@@ -302,9 +373,27 @@ public class MainActivity extends Activity {
             return dayOrNight;
         }
 
+        protected JSONObject getNewOrOldJSON(){
+            JSONObject theResult=null;
+            if(checkIfOneHourHasPassedSinceLastRequest(sharedPreferences.getString("dateForCheck","empty"))){
+                theResult = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
+                TheLogger.myLog("hour Check:","One hour has passed,going for new json");
+            }else{
+                try {
+                    theResult = new JSONObject(sharedPreferences.getString("json1", ""));
+                    TheLogger.myLog("hour Check:","One hour hasn't passed,keeping old json");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            return theResult;
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
-            final JSONObject json = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
+            final JSONObject json=getNewOrOldJSON();
+
             if (json == null) {
                 TheLogger.myLog("10", "JSON is null sadly");
             } else {
@@ -312,6 +401,10 @@ public class MainActivity extends Activity {
                     try {
                         String weatherConditionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("main");
                         String dateLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getString("dt_txt");
+                        if(i==0 && grabbedNewJSONFromServer){
+                            editor.putString("dateForCheck", dateLocal);
+                            TheLogger.myLog("saved date: ",dateLocal);
+                        }
                         TheLogger.myLog("date and weather: ", dateLocal+" : "+weatherConditionLocal.toString());
                         editor.putString("json1", json.toString());
                         TheLogger.myLog("10", "JSON is cool: " + json.toString());
