@@ -6,20 +6,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cast_intro_overlay_background_color"
     tools:context="com.weathermatrix.nanter1986.weathermatrix.MainActivity">
 
     <LinearLayout
         android:layout_width="368dp"
         android:layout_height="495dp"
         android:orientation="vertical"
-        tools:layout_editor_absoluteY="8dp"
+        android:weightSum="10"
         tools:layout_editor_absoluteX="8dp"
-        android:weightSum="10">
+        tools:layout_editor_absoluteY="8dp">
 
         <ViewFlipper
+            android:id="@+id/view_flipper"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/view_flipper">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:id="@+id/zeroL"
@@ -32,24 +33,23 @@
                     android:id="@+id/zeroDisplayImage"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="7"
                     android:layout_gravity="center"
+                    android:layout_weight="7"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
-                    tools:ignore="ContentDescription"
-                    />
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/zeroDisplayText"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3"
-                    android:text="zero"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:layout_weight="3"
                     android:gravity="center"
+                    android:text="zero"
                     android:textSize="18dp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -64,8 +64,8 @@
                     android:id="@+id/oneDisplayImage"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="7"
                     android:layout_gravity="center"
+                    android:layout_weight="7"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     tools:ignore="ContentDescription" />
@@ -74,13 +74,13 @@
                     android:id="@+id/oneDisplayText"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3"
-                    android:text="one"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:layout_weight="3"
                     android:gravity="center"
+                    android:text="one"
                     android:textSize="18dp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -95,8 +95,8 @@
                     android:id="@+id/twoDisplayImage"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="7"
                     android:layout_gravity="center"
+                    android:layout_weight="7"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     tools:ignore="ContentDescription" />
@@ -105,13 +105,13 @@
                     android:id="@+id/twoDisplayText"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:layout_weight="3"
                     android:gravity="center"
+                    android:text="two"
                     android:textSize="18dp"
-                    android:textStyle="bold"
-                    android:text="two" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -126,8 +126,8 @@
                     android:id="@+id/threeDisplayImage"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="7"
                     android:layout_gravity="center"
+                    android:layout_weight="7"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     tools:ignore="ContentDescription" />
@@ -136,13 +136,13 @@
                     android:id="@+id/threeDisplayText"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:layout_weight="3"
                     android:gravity="center"
+                    android:text="three"
                     android:textSize="18dp"
-                    android:textStyle="bold"
-                    android:text="three" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -157,8 +157,8 @@
                     android:id="@+id/fourDisplayImage"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="7"
                     android:layout_gravity="center"
+                    android:layout_weight="7"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     tools:ignore="ContentDescription" />
@@ -167,13 +167,13 @@
                     android:id="@+id/fourDisplayText"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:layout_weight="3"
                     android:gravity="center"
+                    android:text="four"
                     android:textSize="18dp"
-                    android:textStyle="bold"
-                    android:text="four" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -188,8 +188,8 @@
                     android:id="@+id/fiveDisplayImage"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="7"
                     android:layout_gravity="center"
+                    android:layout_weight="7"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     tools:ignore="ContentDescription" />
@@ -198,13 +198,13 @@
                     android:id="@+id/fiveDisplayText"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:layout_weight="3"
                     android:gravity="center"
+                    android:text="five"
                     android:textSize="18dp"
-                    android:textStyle="bold"
-                    android:text="five" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -219,8 +219,8 @@
                     android:id="@+id/sixDisplayImage"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="7"
                     android:layout_gravity="center"
+                    android:layout_weight="7"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     tools:ignore="ContentDescription" />
@@ -229,13 +229,13 @@
                     android:id="@+id/sixDisplayText"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:layout_weight="3"
                     android:gravity="center"
+                    android:text="six"
                     android:textSize="18dp"
-                    android:textStyle="bold"
-                    android:text="six" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

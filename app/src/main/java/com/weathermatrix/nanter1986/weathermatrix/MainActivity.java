@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -195,6 +196,25 @@ public class MainActivity extends Activity {
 
     }
 
+    public String setTempTextColor(double temp){
+        String color="#7cfc00";
+        if(temp<0){
+            color="#0de6ec";
+        }else if(temp<10){
+            color="#0de6ec";
+        }else if(temp<20){
+            color="#41ec0d";
+        }else if(temp<30){
+            color="#ecd70d";
+        }else if(temp<40){
+            color="#ec9f0d";
+        }else{
+            color="#ec450d";
+        }
+
+        return color;
+    }
+
 
 
     public void displayWeather(JSONObject json,int index) {
@@ -203,7 +223,10 @@ public class MainActivity extends Activity {
             TheLogger.myLog("weather", "cool1");
             String dateLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getString("dt_txt");
             String temperature = full.getString("temp");
-            containers[index].tv.setText(dateLocal+" :\n"+String.format("%.2f", Double.parseDouble(temperature)) + " ℃");
+            Double doubleTemp=Double.parseDouble(temperature);
+            containers[index].tv.setTextColor(Color.parseColor(setTempTextColor(doubleTemp)));
+            containers[index].tv.setText(dateLocal+" :\n"+String.format("%.2f", doubleTemp) + " ℃");
+
             TheLogger.myLog("weather", "cool2");
             //weatherCondition = json.getJSONArray("weather").getJSONObject(0).getString("main");
             TheLogger.myLog("weather", "cool3");
