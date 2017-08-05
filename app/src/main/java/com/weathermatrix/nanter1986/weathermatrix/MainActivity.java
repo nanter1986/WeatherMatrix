@@ -48,21 +48,6 @@ public class MainActivity extends Activity {
     String selectedURL;
     ArrayList<String> resultUrls = new ArrayList<String>();
 
-    ImageView zeroDisplayImage;
-    ImageView oneDisplayImage;
-    ImageView twoDisplayImage;
-    ImageView threeDisplayImage;
-    ImageView fourDisplayImage;
-    ImageView fiveDisplayImage;
-    ImageView sixDisplayImage;
-    TextView zeroDisplayText;
-    TextView oneDisplayText;
-    TextView twoDisplayText;
-    TextView threeDisplayText;
-    TextView fourDisplayText;
-    TextView fiveDisplayText;
-    TextView sixDisplayText;
-
 
     Float myLatitude;
     Float myLongitude;
@@ -126,33 +111,61 @@ public class MainActivity extends Activity {
     }
 
     private void referenceImageviewsAndTextviews() {
-        zeroDisplayImage = findViewById(R.id.zeroDisplayImage);
-        zeroDisplayText = findViewById(R.id.zeroDisplayText);
-        containers[0]=new DisplayContainer(zeroDisplayImage,zeroDisplayText,0);
 
-        oneDisplayImage = findViewById(R.id.oneDisplayImage);
-        oneDisplayText = findViewById(R.id.oneDisplayText);
-        containers[1]=new DisplayContainer(oneDisplayImage,oneDisplayText,1);
+        containers[0]=new DisplayContainer((ImageView)findViewById(R.id.zeroDisplayImage),
+                (TextView) findViewById(R.id.zeroDisplayText),
+                0,
+                (TextView) findViewById(R.id.zeroHeadText),
+                (ImageView) findViewById(R.id.zeroIcon),
+                (TextView) findViewById(R.id.zeroWind));
 
-        twoDisplayImage = findViewById(R.id.twoDisplayImage);
-        twoDisplayText = findViewById(R.id.twoDisplayText);
-        containers[2]=new DisplayContainer(twoDisplayImage,twoDisplayText,2);
 
-        threeDisplayImage = findViewById(R.id.threeDisplayImage);
-        threeDisplayText = findViewById(R.id.threeDisplayText);
-        containers[3]=new DisplayContainer(threeDisplayImage,threeDisplayText,3);
+        containers[1]=new DisplayContainer((ImageView)findViewById(R.id.oneDisplayImage),
+                (TextView) findViewById(R.id.oneDisplayText),
+                1,
+                (TextView) findViewById(R.id.oneHeadText),
+                (ImageView) findViewById(R.id.oneIcon),
+                (TextView) findViewById(R.id.oneWind));
 
-        fourDisplayImage = findViewById(R.id.fourDisplayImage);
-        fourDisplayText = findViewById(R.id.fourDisplayText);
-        containers[4]=new DisplayContainer(fourDisplayImage,fourDisplayText,4);
 
-        fiveDisplayImage = findViewById(R.id.fiveDisplayImage);
-        fiveDisplayText = findViewById(R.id.fiveDisplayText);
-        containers[5]=new DisplayContainer(fiveDisplayImage,fiveDisplayText,5);
+        containers[2]=new DisplayContainer((ImageView)findViewById(R.id.twoDisplayImage),
+                (TextView) findViewById(R.id.twoDisplayText),
+                2,
+                (TextView) findViewById(R.id.twoHeadText),
+                (ImageView) findViewById(R.id.twoIcon),
+                (TextView) findViewById(R.id.twoWind));
 
-        sixDisplayImage = findViewById(R.id.sixDisplayImage);
-        sixDisplayText = findViewById(R.id.sixDisplayText);
-        containers[6]=new DisplayContainer(sixDisplayImage,sixDisplayText,6);
+
+        containers[3]=new DisplayContainer((ImageView)findViewById(R.id.threeDisplayImage),
+                (TextView) findViewById(R.id.threeDisplayText),
+                3,
+                (TextView) findViewById(R.id.threeHeadText),
+                (ImageView) findViewById(R.id.threeIcon),
+                (TextView) findViewById(R.id.threeWind));
+
+
+        containers[4]=new DisplayContainer((ImageView)findViewById(R.id.fourDisplayImage),
+                (TextView) findViewById(R.id.fourDisplayText),
+                4,
+                (TextView) findViewById(R.id.fourHeadText),
+                (ImageView) findViewById(R.id.fourIcon),
+                (TextView) findViewById(R.id.fourWind));
+
+
+        containers[5]=new DisplayContainer((ImageView)findViewById(R.id.fiveDisplayImage),
+                (TextView) findViewById(R.id.fiveDisplayText),
+                5,
+                (TextView) findViewById(R.id.fiveHeadText),
+                (ImageView) findViewById(R.id.fiveIcon),
+                (TextView) findViewById(R.id.fiveWind));
+
+
+        containers[6]=new DisplayContainer((ImageView)findViewById(R.id.sixDisplayImage),
+                (TextView) findViewById(R.id.sixDisplayText),
+                6,
+                (TextView) findViewById(R.id.sixHeadText),
+                (ImageView) findViewById(R.id.sixIcon),
+                (TextView) findViewById(R.id.sixWind));
 
     }
 
@@ -222,14 +235,16 @@ public class MainActivity extends Activity {
             JSONObject full = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("main");
             TheLogger.myLog("weather", "cool1");
             String dateLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getString("dt_txt");
+            containers[index].date.setText(dateLocal);
+            Double windSpeed = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("wind").getDouble("speed");
+            containers[index].wind.setText(windSpeed.toString());
             String temperature = full.getString("temp");
             Double doubleTemp=Double.parseDouble(temperature);
-            containers[index].tv.setTextColor(Color.parseColor(setTempTextColor(doubleTemp)));
-            containers[index].tv.setText(dateLocal+" :\n"+String.format("%.2f", doubleTemp) + " ℃");
+            containers[index].temp.setTextColor(Color.parseColor(setTempTextColor(doubleTemp)));
+            containers[index].temp.setText(String.format("%.2f", doubleTemp) + " ℃");
 
             TheLogger.myLog("weather", "cool2");
-            //weatherCondition = json.getJSONArray("weather").getJSONObject(0).getString("main");
-            TheLogger.myLog("weather", "cool3");
+
         } catch (JSONException e) {
             TheLogger.myLog("weather", "something wrong");
             e.printStackTrace();
@@ -245,7 +260,7 @@ public class MainActivity extends Activity {
         TheLogger.myLog("1", "in info");
         if (myLatitude == null || myLongitude == null) {
             TheLogger.myLog("1", "in null");
-            zeroDisplayText.setText("something is null\n" + myLongitude + "\n" + myLatitude);
+            containers[0].temp.setText("something is null\n" + myLongitude + "\n" + myLatitude);
         } else {
             TheLogger.myLog("1", "in else");
 
@@ -261,7 +276,7 @@ public class MainActivity extends Activity {
                 country = addresses.get(0).getCountryName();
                 postalCode = addresses.get(0).getPostalCode();
                 knownName = addresses.get(0).getFeatureName();
-                zeroDisplayText.setText(city);
+                containers[0].temp.setText(city);
                 TheLogger.myLog("1", "in try2");
                 TheLogger.myLog("1", "city:" + city);
                 TheLogger.myLog("1", "adress:" + address);
@@ -280,7 +295,7 @@ public class MainActivity extends Activity {
 
     private void getLocation() {
 
-        zeroDisplayText.setText("Getting location...");
+        containers[0].temp.setText("Getting location...");
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         try {
             mFusedLocationClient.getLastLocation()
@@ -294,7 +309,7 @@ public class MainActivity extends Activity {
                                 editor.putFloat("lat", myLatitude);
                                 editor.putFloat("lon", myLongitude);
                                 editor.commit();
-                                zeroDisplayText.setText("Longitude:" + myLongitude + "\nLatitude:" + myLatitude);
+                                containers[0].temp.setText("Longitude:" + myLongitude + "\nLatitude:" + myLatitude);
 
                             }
                         }
@@ -473,7 +488,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             for(int i=0;i<7;i++){
-                containers[i].iv.setImageBitmap(theBitmap[i]);
+                containers[i].picture.setImageBitmap(theBitmap[i]);
                 try {
                     JSONObject json = new JSONObject(sharedPreferences.getString("json1", ""));
                     displayWeather(json,i);

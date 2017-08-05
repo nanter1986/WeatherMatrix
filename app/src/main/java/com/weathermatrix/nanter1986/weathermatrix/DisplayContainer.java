@@ -8,13 +8,19 @@ import android.widget.TextView;
  */
 
 public class DisplayContainer {
-    ImageView iv;
-    TextView tv;
+    ImageView picture;
+    TextView temp;
     int day;
+    TextView date;
+    ImageView icon;
+    TextView wind;
 
-    public DisplayContainer(ImageView iv, TextView tv, int day) {
-        this.iv = iv;
-        this.tv = tv;
+    public DisplayContainer(ImageView picture, TextView temp, int day, TextView date, ImageView icon, TextView wind) {
+        this.picture = picture;
+        this.temp = temp;
         this.day = day;
+        this.date = date;
+        this.icon = icon;
+        this.wind = wind;
     }
 }
