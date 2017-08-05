@@ -236,8 +236,8 @@ public class MainActivity extends Activity {
             TheLogger.myLog("weather", "cool1");
             String dateLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getString("dt_txt");
             containers[index].date.setText(dateLocal);
-            Double windSpeed = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("wind").getDouble("speed");
-            containers[index].wind.setText(windSpeed.toString());
+            Double windSpeed = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("wind").getDouble("speed") * 3600/1000;
+            containers[index].wind.setText(windSpeed.toString()+" "+"km/h");
             String temperature = full.getString("temp");
             Double doubleTemp=Double.parseDouble(temperature);
             containers[index].temp.setTextColor(Color.parseColor(setTempTextColor(doubleTemp)));
