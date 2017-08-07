@@ -228,21 +228,55 @@ public class MainActivity extends Activity {
         return color;
     }
 
+    protected int getIconForWeatherDescription(String description){
+        int icon=0;
+        switch (description){
+            case "clear sky":
+                icon=R.drawable.clear_sky;
+                break;
+            case "few clouds":
+                icon=R.drawable.few_clouds;
+                break;
+            case "scattered clouds":
+                icon=R.drawable.scattered_clouds;
+                break;
+            case "broken clouds":
+                icon=R.drawable.broken_clouds;
+                break;
+            case "rain":
+                icon=R.drawable.rain;
+                break;
+            case "shower rain":
+                icon=R.drawable.shower_rain;
+                break;
+            case "thunderstorm":
+                icon=R.drawable.thunderstorm;
+                break;
+            case "snow":
+                icon=R.drawable.snow;
+                break;
+            case "mist":
+                icon=R.drawable.mist;
+                break;
+        }
 
+        return icon;
+    }
 
     public void displayWeather(JSONObject json,int index) {
         try {
             JSONObject full = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("main");
             TheLogger.myLog("weather", "cool1");
             String dateLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getString("dt_txt");
+            String weatherDescriptionLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONArray("weather").getJSONObject(0).getString("description");
             containers[index].date.setText(dateLocal);
             Double windSpeed = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("wind").getDouble("speed") * 3600/1000;
             containers[index].wind.setText(windSpeed.toString()+" "+"km/h");
             String temperature = full.getString("temp");
             Double doubleTemp=Double.parseDouble(temperature);
             containers[index].temp.setTextColor(Color.parseColor(setTempTextColor(doubleTemp)));
-            containers[index].temp.setText(String.format("%.2f", doubleTemp) + " ℃");
-
+            containers[index].temp.setText(String.format("%.2f", doubleTemp) + " ℃\n"+weatherDescriptionLocal);
+            containers[index].icon.setBackgroundResource(getIconForWeatherDescription(weatherDescriptionLocal));
             TheLogger.myLog("weather", "cool2");
 
         } catch (JSONException e) {
@@ -323,6 +357,8 @@ public class MainActivity extends Activity {
     public class GetDocument extends AsyncTask<Void, Void, Void> {
 
         boolean grabbedNewJSONFromServer=false;
+
+
 
         protected boolean checkIfOneHourHasPassedSinceLastRequest(String date){
             if(date.equals("empty")){
@@ -438,6 +474,7 @@ public class MainActivity extends Activity {
                 for (int i = 0; i < 7; i++) {
                     try {
                         String weatherConditionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("main");
+                        String weatherDescriptionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("description");
                         String dateLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getString("dt_txt");
                         if(i==0 && grabbedNewJSONFromServer){
                             editor.putString("dateForCheck", dateLocal);
