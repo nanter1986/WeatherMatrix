@@ -18,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +44,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends Activity {
+    private InterstitialAd interstitial;
+    private Handler mHandler;
+    private Runnable displayAd;
+
     Document doc;
     Document doc2;
     Elements img;
@@ -91,6 +99,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prepareIntAd();
         setContentView(R.layout.activity_main);
         sharedPreferences = getPreferences(MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -107,6 +116,41 @@ public class MainActivity extends Activity {
 
         new GetDocument().execute();
 
+
+    }
+
+    public void prepareIntAd(){
+        interstitial = new InterstitialAd(MainActivity.this);
+        interstitial.setAdUnitId("ca-app-pub-1155245883636527/9134776076");
+        interstitial.loadAd(new AdRequest.Builder().build());
+        interstitial.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                interstitial.loadAd(new AdRequest.Builder().build());
+            }
+
+            @Override
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+                TheLogger.myLog("Ads", "onAdLoaded");
+                displayInterstitial();
+            }
+
+
+        });
+
+
+
+    }
+
+    public void displayInterstitial() {
+        if (interstitial.isLoaded()) {
+            interstitial.show();
+        } else {
+            interstitial.loadAd(new AdRequest.Builder().build());
+            TheLogger.myLog("ads.............", "The interstitial wasn't loaded yet.");
+        }
 
     }
 
@@ -202,7 +246,7 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
-
+        displayInterstitial();
 
         return false;
 
@@ -271,14 +315,14 @@ public class MainActivity extends Activity {
             String weatherDescriptionLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONArray("weather").getJSONObject(0).getString("description");
             containers[index].date.setText(dateLocal);
             Double windSpeed = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("wind").getDouble("speed") * 3600/1000;
-            containers[index].wind.setText(windSpeed.toString()+" "+"km/h");
+            containers[index].wind.setText(windSpeed.intValue()+" "+"km/h");
             String temperature = full.getString("temp");
             Double doubleTemp=Double.parseDouble(temperature);
             containers[index].temp.setTextColor(Color.parseColor(setTempTextColor(doubleTemp)));
             containers[index].temp.setText(String.format("%.2f", doubleTemp) + " ℃\n"+weatherDescriptionLocal);
             containers[index].icon.setBackgroundResource(getIconForWeatherDescription(weatherDescriptionLocal));
             TheLogger.myLog("weather", "cool2");
-
+            displayInterstitial();
         } catch (JSONException e) {
             TheLogger.myLog("weather", "something wrong");
             e.printStackTrace();
