@@ -134,7 +134,7 @@ public class MainActivity extends Activity {
             public void onAdLoaded() {
                 // Code to be executed when an ad finishes loading.
                 TheLogger.myLog("Ads", "onAdLoaded");
-                displayInterstitial();
+                //displayInterstitial();
             }
 
 
@@ -246,7 +246,7 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
-        displayInterstitial();
+        //displayInterstitial();
 
         return false;
 
@@ -322,7 +322,7 @@ public class MainActivity extends Activity {
             containers[index].temp.setText(String.format("%.2f", doubleTemp) + " ℃\n"+weatherDescriptionLocal);
             containers[index].icon.setBackgroundResource(getIconForWeatherDescription(weatherDescriptionLocal));
             TheLogger.myLog("weather", "cool2");
-            displayInterstitial();
+            //displayInterstitial();
         } catch (JSONException e) {
             TheLogger.myLog("weather", "something wrong");
             e.printStackTrace();
