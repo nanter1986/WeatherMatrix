@@ -37,7 +37,7 @@
                     android:layout_centerVertical="false"
                     android:layout_weight="1"
                     android:gravity="fill_vertical|center_horizontal"
-                    android:text="TextView"
+                    android:text="Loading..."
                     android:textColor="@android:color/white"
                     android:textSize="18dp"
                     android:textStyle="bold" />
@@ -74,7 +74,7 @@
                         android:layout_centerVertical="true"
                         android:layout_weight="4"
                         android:gravity="center"
-                        android:text="zero"
+                        android:text="Temperature"
                         android:textSize="18dp"
                         android:textStyle="bold" />
 
@@ -84,9 +84,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:gravity="center_vertical|center_horizontal"
-                        android:text="TextView"
+                        android:text="Wind Speed"
                         android:textColor="@android:color/holo_green_dark"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -106,7 +106,7 @@
                     android:layout_centerVertical="false"
                     android:layout_weight="1"
                     android:gravity="fill_vertical|center_horizontal"
-                    android:text="TextView"
+                    android:text="Loading..."
                     android:textColor="@android:color/white"
                     android:textSize="18dp"
                     android:textStyle="bold" />
@@ -143,7 +143,7 @@
                         android:layout_centerVertical="true"
                         android:layout_weight="4"
                         android:gravity="center"
-                        android:text="one"
+                        android:text="Temperature"
                         android:textSize="18dp"
                         android:textStyle="bold" />
 
@@ -153,9 +153,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:gravity="center_vertical|center_horizontal"
-                        android:text="TextView"
+                        android:text="Wind Speed"
                         android:textColor="@android:color/holo_green_dark"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -175,7 +175,7 @@
                     android:layout_centerVertical="false"
                     android:layout_weight="1"
                     android:gravity="fill_vertical|center_horizontal"
-                    android:text="TextView"
+                    android:text="Loading..."
                     android:textColor="@android:color/white"
                     android:textSize="18dp"
                     android:textStyle="bold" />
@@ -212,7 +212,7 @@
                         android:layout_centerVertical="true"
                         android:layout_weight="4"
                         android:gravity="center"
-                        android:text="two"
+                        android:text="Temperature"
                         android:textSize="18dp"
                         android:textStyle="bold" />
 
@@ -222,7 +222,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:gravity="center_vertical|center_horizontal"
-                        android:text="TextView"
+                        android:text="Wind Speed"
                         android:textColor="@android:color/holo_green_dark"
                         android:textSize="18dp" />
                 </LinearLayout>
@@ -244,7 +244,7 @@
                     android:layout_centerVertical="false"
                     android:layout_weight="1"
                     android:gravity="fill_vertical|center_horizontal"
-                    android:text="TextView"
+                    android:text="Loading..."
                     android:textColor="@android:color/white"
                     android:textSize="18dp"
                     android:textStyle="bold" />
@@ -281,7 +281,7 @@
                         android:layout_centerVertical="true"
                         android:layout_weight="4"
                         android:gravity="center"
-                        android:text="three"
+                        android:text="Temperature"
                         android:textSize="18dp"
                         android:textStyle="bold" />
 
@@ -291,9 +291,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:gravity="center_vertical|center_horizontal"
-                        android:text="TextView"
+                        android:text="Wind Speed"
                         android:textColor="@android:color/holo_green_dark"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -313,7 +313,7 @@
                     android:layout_centerVertical="false"
                     android:layout_weight="1"
                     android:gravity="fill_vertical|center_horizontal"
-                    android:text="TextView"
+                    android:text="Loading..."
                     android:textColor="@android:color/white"
                     android:textSize="18dp"
                     android:textStyle="bold" />
@@ -350,7 +350,7 @@
                         android:layout_centerVertical="true"
                         android:layout_weight="4"
                         android:gravity="center"
-                        android:text="four"
+                        android:text="Temperature"
                         android:textSize="18dp"
                         android:textStyle="bold" />
 
@@ -360,9 +360,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:gravity="center_vertical|center_horizontal"
-                        android:text="TextView"
+                        android:text="Wind Speed"
                         android:textColor="@android:color/holo_green_dark"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -382,7 +382,7 @@
                     android:layout_centerVertical="false"
                     android:layout_weight="1"
                     android:gravity="fill_vertical|center_horizontal"
-                    android:text="TextView"
+                    android:text="Loading..."
                     android:textColor="@android:color/white"
                     android:textSize="18dp"
                     android:textStyle="bold" />
@@ -419,7 +419,7 @@
                         android:layout_centerVertical="true"
                         android:layout_weight="4"
                         android:gravity="center"
-                        android:text="five"
+                        android:text="Temperature"
                         android:textSize="18dp"
                         android:textStyle="bold" />
 
@@ -429,9 +429,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:gravity="center_vertical|center_horizontal"
-                        android:text="TextView"
+                        android:text="Wind Speed"
                         android:textColor="@android:color/holo_green_dark"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -451,7 +451,7 @@
                     android:layout_centerVertical="false"
                     android:layout_weight="1"
                     android:gravity="fill_vertical|center_horizontal"
-                    android:text="TextView"
+                    android:text="Loading..."
                     android:textColor="@android:color/white"
                     android:textSize="18dp"
                     android:textStyle="bold" />
@@ -488,7 +488,7 @@
                         android:layout_centerVertical="true"
                         android:layout_weight="4"
                         android:gravity="center"
-                        android:text="six"
+                        android:text="Temperature"
                         android:textSize="18dp"
                         android:textStyle="bold" />
 
@@ -498,9 +498,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:gravity="center_vertical|center_horizontal"
-                        android:text="TextView"
+                        android:text="Wind Speed"
                         android:textColor="@android:color/holo_green_dark"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
             </LinearLayout>

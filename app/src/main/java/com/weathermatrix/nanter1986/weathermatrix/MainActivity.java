@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
             @Override
             public void onAdClosed() {
                 // Load the next interstitial.
-                interstitial.loadAd(new AdRequest.Builder().build());
+                //interstitial.loadAd(new AdRequest.Builder().build());
             }
 
             @Override
@@ -276,33 +276,29 @@ public class MainActivity extends Activity {
     protected int getIconForWeatherDescription(String description){
         int icon=0;
         switch (description){
-            case "clear sky":
+            case "Clear":
                 icon=R.drawable.clear_sky;
                 break;
-            case "few clouds":
-                icon=R.drawable.few_clouds;
-                break;
-            case "scattered clouds":
-                icon=R.drawable.scattered_clouds;
-                break;
-            case "broken clouds":
+            case "Clouds":
                 icon=R.drawable.broken_clouds;
                 break;
-            case "rain":
-                icon=R.drawable.rain;
-                break;
-            case "shower rain":
+            case "Rain":
                 icon=R.drawable.shower_rain;
                 break;
-            case "thunderstorm":
-                icon=R.drawable.thunderstorm;
-                break;
-            case "snow":
+            case "Snow":
                 icon=R.drawable.snow;
                 break;
-            case "mist":
+            case "Atmosphere":
                 icon=R.drawable.mist;
                 break;
+            case "Extreme":
+                icon=R.drawable.thunderstorm;
+                break;
+            case "Thunderstorm":
+                icon=R.drawable.thunderstorm;
+                //icon=R.drawable.shower_rain;
+                break;
+
         }
 
         return icon;
@@ -344,7 +340,7 @@ public class MainActivity extends Activity {
     protected void getAndDisplayIcon(JSONObject json,int index){
         String weatherDescriptionLocal = null;
         try {
-            weatherDescriptionLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONArray("weather").getJSONObject(0).getString("description");
+            weatherDescriptionLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONArray("weather").getJSONObject(0).getString("main");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -404,14 +400,15 @@ public class MainActivity extends Activity {
                 TheLogger.myLog("1", "known name:" + knownName);
                 TheLogger.myLog("1", "thourough:" + addresses.get(0).getThoroughfare());
                 TheLogger.myLog("1", "Sthourough:" + addresses.get(0).getSubThoroughfare());
-                if(city!=null){
-                    editor.putString("savedCity", city);
-                    editor.commit();
-                }
+
 
             } catch (IOException e) {
                 containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
                 TheLogger.myLog("1", "in catch");
+                e.printStackTrace();
+            }catch(Exception e){
+                containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
+                TheLogger.myLog("1", "in catch all");
                 e.printStackTrace();
             }
         }
@@ -544,7 +541,11 @@ public class MainActivity extends Activity {
             if(checkIfOneHourHasPassedSinceLastRequest(sharedPreferences.getString("dateForCheck","empty"))){
                 theResult = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
                 TheLogger.myLog("hour Check:","One hour has passed,going for new json");
-            }else if(!sharedPreferences.getString("savedCity",city).equals(city)){
+            }else if(!sharedPreferences.getString("savedCity","city").equals(city)){
+                if(city!=null){
+                    editor.putString("savedCity", city);
+                    editor.commit();
+                }
                 theResult = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
                 TheLogger.myLog("location Check:","Location changed,going for new json");
             }else{
