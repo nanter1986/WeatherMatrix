@@ -12,6 +12,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -81,6 +82,7 @@ public class MainActivity extends Activity {
 
     private FusedLocationProviderClient mFusedLocationClient;
 
+    @Nullable
     public static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
@@ -111,8 +113,7 @@ public class MainActivity extends Activity {
         context = getApplicationContext();
         getLocation();
         getLocationInfo();
-        //new GetWeatherAsync().execute();
-        //getWeather();
+
 
         new GetDocument().execute();
 
@@ -307,20 +308,57 @@ public class MainActivity extends Activity {
         return icon;
     }
 
+    protected void getAndDisplayWind(JSONObject json,int index){
+        Double windSpeed = null;
+        try {
+            windSpeed = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("wind").getDouble("speed") * 3600/1000;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        containers[index].wind.setText(windSpeed.intValue()+" "+"km/h");
+    }
+
+    protected void getAndDisplayDate(JSONObject json,int index){
+        String dateLocal = null;
+        try {
+            dateLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getString("dt_txt");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        containers[index].date.setText(dateLocal);
+
+    }
+
+    protected void getAndDisplayTemp(JSONObject full,int index){
+        String temperature = null;
+        try {
+            temperature = full.getString("temp");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Double doubleTemp=Double.parseDouble(temperature);
+        containers[index].temp.setTextColor(Color.parseColor(setTempTextColor(doubleTemp)));
+        containers[index].temp.setText(String.format("%.2f", doubleTemp) + " ℃");
+    }
+
+    protected void getAndDisplayIcon(JSONObject json,int index){
+        String weatherDescriptionLocal = null;
+        try {
+            weatherDescriptionLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONArray("weather").getJSONObject(0).getString("description");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        containers[index].icon.setBackgroundResource(getIconForWeatherDescription(weatherDescriptionLocal));
+    }
+
     public void displayWeather(JSONObject json,int index) {
         try {
             JSONObject full = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("main");
             TheLogger.myLog("weather", "cool1");
-            String dateLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getString("dt_txt");
-            String weatherDescriptionLocal = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONArray("weather").getJSONObject(0).getString("description");
-            containers[index].date.setText(dateLocal);
-            Double windSpeed = json.getJSONArray("list").getJSONObject(containers[index].day).getJSONObject("wind").getDouble("speed") * 3600/1000;
-            containers[index].wind.setText(windSpeed.intValue()+" "+"km/h");
-            String temperature = full.getString("temp");
-            Double doubleTemp=Double.parseDouble(temperature);
-            containers[index].temp.setTextColor(Color.parseColor(setTempTextColor(doubleTemp)));
-            containers[index].temp.setText(String.format("%.2f", doubleTemp) + " ℃\n"+weatherDescriptionLocal);
-            containers[index].icon.setBackgroundResource(getIconForWeatherDescription(weatherDescriptionLocal));
+            getAndDisplayWind(json,index);
+            getAndDisplayDate(json,index);
+            getAndDisplayTemp(full,index);
+            getAndDisplayIcon(json, index);
             TheLogger.myLog("weather", "cool2");
             //displayInterstitial();
         } catch (JSONException e) {
@@ -337,8 +375,10 @@ public class MainActivity extends Activity {
         TheLogger.myLog("1", dLat + " " + dLLon);
         TheLogger.myLog("1", "in info");
         if (myLatitude == null || myLongitude == null) {
-            TheLogger.myLog("1", "in null");
+            city=sharedPreferences.getString("savedCity","city");
+            TheLogger.myLog("1", "in null,using default "+city);
             containers[0].temp.setText("something is null\n" + myLongitude + "\n" + myLatitude);
+
         } else {
             TheLogger.myLog("1", "in else");
 
@@ -357,13 +397,15 @@ public class MainActivity extends Activity {
                 containers[0].temp.setText(city);
                 TheLogger.myLog("1", "in try2");
                 TheLogger.myLog("1", "city:" + city);
-                TheLogger.myLog("1", "adress:" + address);
+                TheLogger.myLog("1", "address:" + address);
                 TheLogger.myLog("1", "state:" + state);
                 TheLogger.myLog("1", "country:" + country);
                 TheLogger.myLog("1", "postal:" + postalCode);
                 TheLogger.myLog("1", "known name:" + knownName);
                 TheLogger.myLog("1", "thourough:" + addresses.get(0).getThoroughfare());
                 TheLogger.myLog("1", "Sthourough:" + addresses.get(0).getSubThoroughfare());
+                editor.putString("savedCity", city);
+                editor.commit();
             } catch (IOException e) {
                 TheLogger.myLog("1", "in catch");
                 e.printStackTrace();
@@ -493,7 +535,7 @@ public class MainActivity extends Activity {
 
         protected JSONObject getNewOrOldJSON(){
             JSONObject theResult=null;
-            if(checkIfOneHourHasPassedSinceLastRequest(sharedPreferences.getString("dateForCheck","empty"))){
+            if(checkIfOneHourHasPassedSinceLastRequest(sharedPreferences.getString("dateForCheck","empty")) || !sharedPreferences.getString("savedCity",city).equals(city)){
                 theResult = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
                 TheLogger.myLog("hour Check:","One hour has passed,going for new json");
             }else{
@@ -508,6 +550,50 @@ public class MainActivity extends Activity {
             return theResult;
         }
 
+        protected void getImageURL(JSONObject json,int i){
+            String weatherConditionLocal = null;
+            try {
+                weatherConditionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("main");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String dateLocal = null;
+            try {
+                dateLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getString("dt_txt");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(i==0 && grabbedNewJSONFromServer){
+                editor.putString("dateForCheck", dateLocal);
+                TheLogger.myLog("saved date: ",dateLocal);
+                editor.commit();
+            }
+            editor.putString("json1", json.toString());
+            editor.commit();
+            String timeOfDay=checkIfDay(dateLocal);
+            city=sharedPreferences.getString("savedCity","city");
+            String urlForJsoup = "https://www.google.gr/search?q=" + city + "+" + weatherConditionLocal + "+" + timeOfDay +"&client=ubuntu&hs=QMm&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiCqbiZvpnVAhWsI8AKHVSpD4kQ_AUICigB&biw=1301&bih=323";
+            try {
+                doc = Jsoup.connect(urlForJsoup).get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            TheLogger.myLog("1", "Grabbed document at: " + urlForJsoup);
+            img = doc.select("img[data-src]");
+            TheLogger.myLog("2", "Array created of size" + " " + img.size());
+            selectedURL = img.get(i).attr("data-src");
+            TheLogger.myLog("2", "Selected url to go: " + selectedURL);
+        }
+
+        protected void grabImageFromURL(int i){
+            try {
+                doc2 = Jsoup.connect(selectedURL).ignoreContentType(true).get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            theBitmap[i] = getBitmapFromURL(selectedURL);
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
             final JSONObject json=getNewOrOldJSON();
@@ -516,47 +602,8 @@ public class MainActivity extends Activity {
                 TheLogger.myLog("10", "JSON is null sadly");
             } else {
                 for (int i = 0; i < 7; i++) {
-                    try {
-                        String weatherConditionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("main");
-                        String weatherDescriptionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("description");
-                        String dateLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getString("dt_txt");
-                        if(i==0 && grabbedNewJSONFromServer){
-                            editor.putString("dateForCheck", dateLocal);
-                            TheLogger.myLog("saved date: ",dateLocal);
-                        }
-                        TheLogger.myLog("date and weather: ", dateLocal+" : "+weatherConditionLocal.toString());
-                        editor.putString("json1", json.toString());
-                        TheLogger.myLog("10", "JSON is cool: " + json.toString());
-                        TheLogger.myLog("10", "small JSON is cool-dayIndex: "+containers[i].day+" " + weatherConditionLocal);
-                        editor.commit();
-                        String timeOfDay=checkIfDay(dateLocal);
-                        TheLogger.myLog("day or night? answer:",timeOfDay);
-                        String urlForJsoup = "https://www.google.gr/search?q=" + city + "+" + weatherConditionLocal + "+" + timeOfDay +"&client=ubuntu&hs=QMm&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiCqbiZvpnVAhWsI8AKHVSpD4kQ_AUICigB&biw=1301&bih=323";
-                        doc = Jsoup.connect(urlForJsoup).get();
-                        TheLogger.myLog("1", "Grabbed document at: " + urlForJsoup);
-                        img = doc.select("img[data-src]");
-                        TheLogger.myLog("2", "Array created of size" + " " + img.size());
-                        /*for (Element e : img) {
-                            TheLogger.myLog("2", "src:<" + e.attr("data-src") + ">");
-                        }*/
-                        selectedURL = img.get(i).attr("data-src");
-                        TheLogger.myLog("2", "Selected url to go: " + selectedURL);
-                    } catch (JSONException e1) {
-                        e1.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        TheLogger.myLog("3", "Opening doc2 started at " + selectedURL + "...... ");
-                        doc2 = Jsoup.connect(selectedURL).ignoreContentType(true).get();
-                        TheLogger.myLog("3", "Opened doc2 at " + selectedURL);
-                        TheLogger.myLog("3", "The full html:\n" + doc2.html());
-                        theBitmap[i] = getBitmapFromURL(selectedURL);
-                        TheLogger.myLog("3.1", "got bitmap");
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    getImageURL(json,i);
+                    grabImageFromURL(i);
 
                 }
             }
