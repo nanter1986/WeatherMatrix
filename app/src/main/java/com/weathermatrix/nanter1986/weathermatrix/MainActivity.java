@@ -404,8 +404,11 @@ public class MainActivity extends Activity {
                 TheLogger.myLog("1", "known name:" + knownName);
                 TheLogger.myLog("1", "thourough:" + addresses.get(0).getThoroughfare());
                 TheLogger.myLog("1", "Sthourough:" + addresses.get(0).getSubThoroughfare());
-                editor.putString("savedCity", city);
-                editor.commit();
+                if(city!=null){
+                    editor.putString("savedCity", city);
+                    editor.commit();
+                }
+
             } catch (IOException e) {
                 TheLogger.myLog("1", "in catch");
                 e.printStackTrace();
@@ -535,25 +538,33 @@ public class MainActivity extends Activity {
 
         protected JSONObject getNewOrOldJSON(){
             JSONObject theResult=null;
-            if(checkIfOneHourHasPassedSinceLastRequest(sharedPreferences.getString("dateForCheck","empty")) || !sharedPreferences.getString("savedCity",city).equals(city)){
+            TheLogger.myLog("location change",sharedPreferences.getString("savedCity",city)+"-"+city);
+            if(checkIfOneHourHasPassedSinceLastRequest(sharedPreferences.getString("dateForCheck","empty"))){
                 theResult = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
                 TheLogger.myLog("hour Check:","One hour has passed,going for new json");
+            }else if(!sharedPreferences.getString("savedCity",city).equals(city)){
+                theResult = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
+                TheLogger.myLog("location Check:","Location changed,going for new json");
             }else{
                 try {
                     theResult = new JSONObject(sharedPreferences.getString("json1", ""));
-                    TheLogger.myLog("hour Check:","One hour hasn't passed,keeping old json");
+                    TheLogger.myLog("hour Check:","One hour hasn't passed,location didn't change,keeping old json");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             }
+            TheLogger.myLog("the json",theResult.toString());
             return theResult;
         }
 
         protected void getImageURL(JSONObject json,int i){
             String weatherConditionLocal = null;
+            String weatherDetailsLocal = null;
             try {
                 weatherConditionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("main");
+                weatherDetailsLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("description");
+                TheLogger.myLog("the conditions",weatherConditionLocal+" - "+weatherDetailsLocal);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -615,6 +626,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            ToastMaker.makeTheToast(context,sharedPreferences.getString("savedCity",city)+"-"+city);
             for(int i=0;i<7;i++){
                 containers[i].picture.setImageBitmap(theBitmap[i]);
                 try {
