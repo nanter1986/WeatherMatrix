@@ -410,6 +410,7 @@ public class MainActivity extends Activity {
                 }
 
             } catch (IOException e) {
+                containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
                 TheLogger.myLog("1", "in catch");
                 e.printStackTrace();
             }
@@ -438,6 +439,7 @@ public class MainActivity extends Activity {
                         }
                     });
         } catch (SecurityException se) {
+            containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
             se.printStackTrace();
         }
     }
@@ -550,11 +552,15 @@ public class MainActivity extends Activity {
                     theResult = new JSONObject(sharedPreferences.getString("json1", ""));
                     TheLogger.myLog("hour Check:","One hour hasn't passed,location didn't change,keeping old json");
                 } catch (JSONException e) {
+                    containers[0].temp.setText("Couldn't read json data");
                     e.printStackTrace();
                 }
 
             }
             TheLogger.myLog("the json",theResult.toString());
+            if(theResult==null){
+                containers[0].temp.setText("Failed to connect");
+            }
             return theResult;
         }
 
@@ -588,6 +594,7 @@ public class MainActivity extends Activity {
                 doc = Jsoup.connect(urlForJsoup).get();
             } catch (IOException e) {
                 e.printStackTrace();
+                containers[0].temp.setText("Failed to connect");
             }
             TheLogger.myLog("1", "Grabbed document at: " + urlForJsoup);
             img = doc.select("img[data-src]");
@@ -601,6 +608,7 @@ public class MainActivity extends Activity {
                 doc2 = Jsoup.connect(selectedURL).ignoreContentType(true).get();
             } catch (IOException e) {
                 e.printStackTrace();
+                containers[0].temp.setText("Failed to grab image.\nCheck your connection.");
             }
             theBitmap[i] = getBitmapFromURL(selectedURL);
         }
