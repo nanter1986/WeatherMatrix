@@ -107,7 +107,6 @@ public class MainActivity extends Activity {
         editor = sharedPreferences.edit();
         mViewFlipper = this.findViewById(R.id.view_flipper);
         referenceImageviewsAndTextviews();
-        //http://www.journaldev.com/10429/android-viewflipper-example-tutorial
 
         handler = new Handler();
         context = getApplicationContext();
@@ -366,9 +365,12 @@ public class MainActivity extends Activity {
     private void getLocationInfo() {
         myLatitude = sharedPreferences.getFloat("lat", 0);
         myLongitude = sharedPreferences.getFloat("lon", 0);
+        TheLogger.myLog("coord read from memory 2",sharedPreferences.getFloat("lat", 0)+" "+sharedPreferences.getFloat("lon", 0));
+
+
         Double dLat = (double) myLatitude;
         Double dLLon = (double) myLongitude;
-        TheLogger.myLog("1", dLat + " " + dLLon);
+        TheLogger.myLog("coord to double", dLat + " " + dLLon);
         TheLogger.myLog("1", "in info");
         if (myLatitude == null || myLongitude == null) {
             city=sharedPreferences.getString("savedCity","city");
@@ -412,6 +414,13 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
         }
+        if(city==null || city.equals("")){
+            city=sharedPreferences.getString("savedCity","city");
+            TheLogger.myLog("1", "in null,using default "+city);
+        }else{
+            editor.putString("savedCity",city);
+            TheLogger.myLog("saved city","City is:"+city);
+        }
     }
 
     private void getLocation() {
@@ -424,12 +433,15 @@ public class MainActivity extends Activity {
                         @Override
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
+                            TheLogger.myLog("location",location.toString());
                             if (location != null) {
                                 myLatitude = (float) location.getLatitude();
                                 myLongitude = (float) location.getLongitude();
+                                TheLogger.myLog("first location",myLatitude+" "+myLatitude);
                                 editor.putFloat("lat", myLatitude);
                                 editor.putFloat("lon", myLongitude);
                                 editor.commit();
+                                TheLogger.myLog("coord read from memory",sharedPreferences.getFloat("lat", 0)+" "+sharedPreferences.getFloat("lon", 0));
                                 containers[0].temp.setText("Longitude:" + myLongitude + "\nLatitude:" + myLatitude);
 
                             }
@@ -537,17 +549,17 @@ public class MainActivity extends Activity {
 
         protected JSONObject getNewOrOldJSON(){
             JSONObject theResult=null;
-            TheLogger.myLog("location change",sharedPreferences.getString("savedCity",city)+"-"+city);
+            TheLogger.myLog("location change",sharedPreferences.getString("oldCity","city")+"-"+city);
             if(checkIfOneHourHasPassedSinceLastRequest(sharedPreferences.getString("dateForCheck","empty"))){
                 theResult = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
                 TheLogger.myLog("hour Check:","One hour has passed,going for new json");
-            }else if(!sharedPreferences.getString("savedCity","city").equals(city)){
+            }else if(!sharedPreferences.getString("oldCity","city").equals(city)){
                 if(city!=null){
-                    editor.putString("savedCity", city);
+                    editor.putString("oldCity", city);
                     editor.commit();
                 }
                 theResult = WeatherGrabber.grabWeather(context, myLongitude, myLatitude);
-                TheLogger.myLog("location Check:","Location changed,going for new json");
+                TheLogger.myLog("location Check:","Location changed,old:"+sharedPreferences.getString("oldCity","city")+",new:"+city+"going for new json");
             }else{
                 try {
                     theResult = new JSONObject(sharedPreferences.getString("json1", ""));
