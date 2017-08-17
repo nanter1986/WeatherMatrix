@@ -58,8 +58,8 @@ public class MainActivity extends Activity {
     ArrayList<String> resultUrls = new ArrayList<String>();
 
 
-    Float myLatitude;
-    Float myLongitude;
+    Float myLatitude=300f;
+    Float myLongitude=300f;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     Geocoder geocoder;
@@ -110,9 +110,10 @@ public class MainActivity extends Activity {
 
         handler = new Handler();
         context = getApplicationContext();
-        getLocation();
-        getLocationInfo();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        getLocation();
+        //getLocationInfo();
 
         new GetDocument().execute();
 
@@ -365,14 +366,13 @@ public class MainActivity extends Activity {
     private void getLocationInfo() {
         myLatitude = sharedPreferences.getFloat("lat", 0);
         myLongitude = sharedPreferences.getFloat("lon", 0);
-        TheLogger.myLog("coord read from memory 2",sharedPreferences.getFloat("lat", 0)+" "+sharedPreferences.getFloat("lon", 0));
+        TheLogger.myLog("coord read from memory in info",sharedPreferences.getFloat("lat", 0)+" "+sharedPreferences.getFloat("lon", 0));
 
 
         Double dLat = (double) myLatitude;
         Double dLLon = (double) myLongitude;
         TheLogger.myLog("coord to double", dLat + " " + dLLon);
-        TheLogger.myLog("1", "in info");
-        if (myLatitude == null || myLongitude == null) {
+        if (dLat == null || dLLon == null) {
             city=sharedPreferences.getString("savedCity","city");
             TheLogger.myLog("1", "in null,using default "+city);
             containers[0].temp.setText("something is null\n" + myLongitude + "\n" + myLatitude);
@@ -383,7 +383,7 @@ public class MainActivity extends Activity {
             try {
                 geocoder = new Geocoder(this, Locale.getDefault());
                 TheLogger.myLog("1", "in try1");
-                addresses = geocoder.getFromLocation(myLatitude, myLongitude, 1);
+                addresses = geocoder.getFromLocation(dLat, dLLon, 1);
                 TheLogger.myLog("1", "in try2");
 
                 String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
@@ -405,11 +405,11 @@ public class MainActivity extends Activity {
 
 
             } catch (IOException e) {
-                containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
+                //containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
                 TheLogger.myLog("1", "in catch");
                 e.printStackTrace();
             }catch(Exception e){
-                containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
+                //containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
                 TheLogger.myLog("1", "in catch all");
                 e.printStackTrace();
             }
@@ -424,9 +424,8 @@ public class MainActivity extends Activity {
     }
 
     private void getLocation() {
-
+        TheLogger.myLog("get location","started");
         containers[0].temp.setText("Getting location...");
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         try {
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -435,23 +434,31 @@ public class MainActivity extends Activity {
                             // Got last known location. In some rare situations this can be null.
                             TheLogger.myLog("location",location.toString());
                             if (location != null) {
+                                TheLogger.myLog("get location","location not null");
                                 myLatitude = (float) location.getLatitude();
                                 myLongitude = (float) location.getLongitude();
-                                TheLogger.myLog("first location",myLatitude+" "+myLatitude);
+                                TheLogger.myLog("first location",myLatitude+" "+myLongitude);
                                 editor.putFloat("lat", myLatitude);
                                 editor.putFloat("lon", myLongitude);
                                 editor.commit();
-                                TheLogger.myLog("coord read from memory",sharedPreferences.getFloat("lat", 0)+" "+sharedPreferences.getFloat("lon", 0));
+                                TheLogger.myLog("coord read from memory after write",sharedPreferences.getFloat("lat", 0)+" "+sharedPreferences.getFloat("lon", 0));
                                 containers[0].temp.setText("Longitude:" + myLongitude + "\nLatitude:" + myLatitude);
+                                getLocationInfo();
+                            }else{
+                                TheLogger.myLog("get location","location null");
 
                             }
                         }
                     });
         } catch (SecurityException se) {
+            TheLogger.myLog("get location","something broke while getting location");
             containers[0].temp.setText("Couldn't get location.\nRestarting the device usually fixes the issue.");
             se.printStackTrace();
         }
+
     }
+
+
 
 
     public class GetDocument extends AsyncTask<Void, Void, Void> {
@@ -548,6 +555,9 @@ public class MainActivity extends Activity {
         }
 
         protected JSONObject getNewOrOldJSON(){
+            while(myLongitude==300f || myLatitude==300f){
+                TheLogger.myLog("getNewOrOldJSON","waiting to change 300");
+            }
             JSONObject theResult=null;
             TheLogger.myLog("location change",sharedPreferences.getString("oldCity","city")+"-"+city);
             if(checkIfOneHourHasPassedSinceLastRequest(sharedPreferences.getString("dateForCheck","empty"))){
@@ -570,10 +580,12 @@ public class MainActivity extends Activity {
                 }
 
             }
-            TheLogger.myLog("the json",theResult.toString());
+
             if(theResult==null){
+                TheLogger.myLog("json null","error");
                 containers[0].temp.setText("Failed to connect");
             }
+            TheLogger.myLog("the json",theResult.toString());
             return theResult;
         }
 
@@ -582,6 +594,9 @@ public class MainActivity extends Activity {
             String weatherDetailsLocal = null;
             try {
                 weatherConditionLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("main");
+                if(weatherConditionLocal.equals("Clear")){
+                    weatherConditionLocal="";
+                }
                 weatherDetailsLocal = json.getJSONArray("list").getJSONObject(containers[i].day).getJSONArray("weather").getJSONObject(0).getString("description");
                 TheLogger.myLog("the conditions",weatherConditionLocal+" - "+weatherDetailsLocal);
             } catch (JSONException e) {
@@ -607,7 +622,7 @@ public class MainActivity extends Activity {
                 doc = Jsoup.connect(urlForJsoup).get();
             } catch (IOException e) {
                 e.printStackTrace();
-                containers[0].temp.setText("Failed to connect");
+                //containers[0].temp.setText("Failed to connect");
             }
             TheLogger.myLog("1", "Grabbed document at: " + urlForJsoup);
             img = doc.select("img[data-src]");
@@ -639,6 +654,7 @@ public class MainActivity extends Activity {
 
                 }
             }
+
 
 
             return null;
